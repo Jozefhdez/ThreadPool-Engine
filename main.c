@@ -1,3 +1,4 @@
+#include "lockfree_queue.h"
 #include "task.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,11 +10,25 @@ void *print_task(void *arg) {
 }
 
 int main() {
-    int value = 67;
-    Task *task = task_create(print_task, &value, 5, 1);
+    LockFreeQueue *queue = queue_create();
 
-    task->func(task->arg);
+    // Create 3 tasks
+    int vals[] = {10, 20, 30};
+    for (int i = 0; i < 3; i++) {
+        Task *t = task_create(print_task, &vals[i], i, i);
+        queue_push(queue, t);
+    }
 
-    task_destroy(task);
+    printf("Queue size: %d\n", queue->size);
+
+    // Pop and execute all tasks
+    Task *t;
+    while ((t = queue_pop(queue)) != NULL) {
+        t->func(t->arg);
+        task_destroy(t);
+    }
+
+    printf("Queue size after: %d\n", queue->size);
+    queue_destroy(queue);
     return 0;
 }

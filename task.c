@@ -5,7 +5,7 @@
 Task *task_create(void *(*func)(void *), void *arg, int priority, int task_id) {
     Task *task = (Task *)malloc(sizeof(Task));
     if (task == NULL) {
-        printf("Error allocating memory for task.");
+        printf("Error allocating memory for task.\n");
         exit(1);
     }
 
