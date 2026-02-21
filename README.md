@@ -14,18 +14,7 @@ A ThreadPool is a design pattern where:
 3. **Load balancing** ensures work is distributed evenly across workers
 4. **Lock-free operations** allow multiple threads to access shared data structures without expensive locks
 
-```
-                    ThreadPool
-    ┌─────────────────────────────────────────────┐
-    │                                             │
-    │  Task Queue: [T1]  [T2]   [T3]   [T4]  [T5] │ ← Tasks waiting
-    │              ↓     ↓     ↓     ↓        │
-    │           ┌──────┬──────┬──────┬──────┐     │
-    │           │Worker│Worker│Worker│Worker│     │ ← Fixed thread pool
-    │           │  #1  │  #2  │  #3  │  #4  │     │
-    │           └──────┴──────┴──────┴──────┘     │
-    └─────────────────────────────────────────────┘
-```
+![ThreadPool Architecture](images/thread_pool.svg)
 
 ## Features
 - Dynamic thread pool with worker management
