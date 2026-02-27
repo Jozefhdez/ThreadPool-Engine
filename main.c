@@ -1,5 +1,6 @@
 #include "lockfree_queue.h"
 #include "task.h"
+#include "threadpool.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,25 +11,27 @@ void *print_task(void *arg) {
 }
 
 int main() {
-    LockFreeQueue *queue = queue_create();
+    ThreadPool *pool = threadpool_create(4);
+    printf("ThreadPool created with %d threads\n", pool->num_threads);
 
-    // Create 3 tasks
-    int vals[] = {10, 20, 30};
+    int vals[] = {100, 200, 300};
     for (int i = 0; i < 3; i++) {
         Task *t = task_create(print_task, &vals[i], i, i);
-        queue_push(queue, t);
+        if (threadpool_submit(pool, t) == 0) {
+            printf("Task %d submitted\n", i);
+        }
     }
 
-    printf("Queue size: %d\n", queue->size);
+    printf("Queue has %d tasks\n", pool->task_queue->size);
 
-    // Pop and execute all tasks
+    // Manually execute tasks (since we don't have workers yet)
     Task *t;
-    while ((t = queue_pop(queue)) != NULL) {
+    while ((t = queue_pop(pool->task_queue)) != NULL) {
         t->func(t->arg);
         task_destroy(t);
     }
 
-    printf("Queue size after: %d\n", queue->size);
-    queue_destroy(queue);
+    threadpool_destroy(pool);
+    printf("ThreadPool destroyed\n");
     return 0;
 }

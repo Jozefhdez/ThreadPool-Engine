@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -Wextra -Werror -g -Iinclude -fsanitize=address
+CFLAGS = -std=c99 -Wall -Wextra -Werror -g -Iinclude -fsanitize=address -pthread
 TARGET = build/main
-SRCS = main.c task.c lockfree_queue.c
+SRCS = main.c task.c lockfree_queue.c threadpool.c
 OBJS = $(addprefix build/, $(SRCS:.c=.o))
 
 .PHONY: all clean
