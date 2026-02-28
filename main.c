@@ -3,6 +3,7 @@
 #include "threadpool.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void *print_task(void *arg) {
     int *num = (int *)arg;
@@ -11,26 +12,21 @@ void *print_task(void *arg) {
 }
 
 int main() {
-    ThreadPool *pool = threadpool_create(4);
-    printf("ThreadPool created with %d threads\n", pool->num_threads);
+    ThreadPool *pool = threadpool_create(2);
+    printf("ThreadPool created with %d worker threads\n", pool->num_threads);
 
-    int vals[] = {100, 200, 300};
-    for (int i = 0; i < 3; i++) {
+    // Submit 5 tasks
+    int vals[] = {10, 20, 30, 40, 50};
+    for (int i = 0; i < 5; i++) {
         Task *t = task_create(print_task, &vals[i], i, i);
-        if (threadpool_submit(pool, t) == 0) {
-            printf("Task %d submitted\n", i);
-        }
+        threadpool_submit(pool, t);
+        printf("Submitted task %d\n", i);
     }
 
-    printf("Queue has %d tasks\n", pool->task_queue->size);
+    // Give workers time to process
+    sleep(1);
 
-    // Manually execute tasks (since we don't have workers yet)
-    Task *t;
-    while ((t = queue_pop(pool->task_queue)) != NULL) {
-        t->func(t->arg);
-        task_destroy(t);
-    }
-
+    printf("Shutting down...\n");
     threadpool_destroy(pool);
     printf("ThreadPool destroyed\n");
     return 0;
