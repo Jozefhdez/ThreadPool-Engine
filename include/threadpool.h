@@ -11,6 +11,8 @@ typedef struct ThreadPool {
     int shutdown;       // flag to signal threads to stop (0 == running, 1 ==
                         // shutdown)
     LockFreeQueue *task_queue;
+    pthread_mutex_t lock;
+    pthread_cond_t cond;
 } ThreadPool;
 
 ThreadPool *threadpool_create(int num_threads);
